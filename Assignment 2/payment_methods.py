@@ -13,19 +13,19 @@ class PaymentManager:
     def add_payment(self, cc, name, address):
         payment_method = PaymentMethod(self.id, cc, name, address)
         self.payment_methods.append(payment_method)
-        print(f"Payment method added with id {self.id}.")
+        print(f"Payment method added.")
         self.id += 1
     
     def remove_payment(self, id):
         self.payment_methods.pop(id)
-        print(f"Payment method with id {id} removed.")
+        print(f"Payment method removed.")
     
     def modify_payment(self, id, cc, name, address):
         payment = self.payment_methods[id]
         payment.cc = cc
         payment.name = name
         payment.address = address
-        print(f"Payment method with id {id} modified.")
+        print(f"Payment method modified.")
     
     def show_payments(self):
         if len(self.payment_methods) == 0:

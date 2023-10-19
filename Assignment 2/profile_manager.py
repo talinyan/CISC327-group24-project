@@ -5,6 +5,7 @@ class UserProfile:
         self.name = name
         self.password = password
         self.email = email
+        print("Account created. Please login.")
     
     def valid_credentials(self, phone_number, email, password):
         # phone number must be of length 10 and all digits
@@ -30,7 +31,7 @@ class UserProfile:
                 self.phone_number = phone_number
                 self.email = email
                 self.password = new_password
-                print(f"Profile information changed for {self.name}.")
+                print(f"Your profile information has been changed.")
         else:
             print("Password does not match old password. Please try again.")
         
@@ -39,19 +40,19 @@ class UserProfile:
     
     def login(self, email, password):
         if self.password == password and self.email == email:
-            print(f"Logged in. Welcome, {self.name}")
+            print(f"You have logged in successfully.")
         else:
             print("Invalid email or password. Try again.")
 
 
 # Example usage:
-# def main():
-#     bob = UserProfile("999 Bob Street", "1112223333", "Bob", "bob@gmail.com", "password123")
-#     bob.show_profile()
-#     bob.modify_profile("888 Bob Street", "2223334444", "bob2@gmail.com", "password124", "password321")
-#     bob.show_profile()
-#     bob.modify_profile("888 Bob Street", "2223334444", "bob2@gmail.com", "password123", "password321")
-#     bob.show_profile()
+def main():
+    bob = UserProfile("999 Bob Street", "1112223333", "Bob", "bob@gmail.com", "password123")
+    bob.show_profile()
+    bob.modify_profile("888 Bob Street", "2223334444", "bob2@gmail.com", "password124", "password321")
+    bob.show_profile()
+    bob.modify_profile("888 Bob Street", "2223334444", "bob2@gmail.com", "password123", "password321")
+    bob.show_profile()
 
-# if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+    main()
