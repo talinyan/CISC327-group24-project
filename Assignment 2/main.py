@@ -46,17 +46,17 @@ class UserProfile:
         self.email = email
     
     def valid_credentials(self, phone_number, email, password):
-        if len(phone_number) != 10 and not phone_number.isdigit():
-            print("Invalid phone number.")
+        if len(phone_number) != 10 or not phone_number.isdigit():
+            print("Invalid phone number. Please try again.")
             return False
         
         # password must be 8 characters
         if len(password) < 8:
-            print("Password too short.")
+            print("Password too short. Please try again.")
             return False
         
         if "@" not in email:
-            print("Invalid email.")
+            print("Invalid email. Please try again.")
             return False
         
         return True
