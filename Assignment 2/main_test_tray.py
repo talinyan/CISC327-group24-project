@@ -1,6 +1,6 @@
 from profile_manager import UserProfile
-from payment_methods import PaymentManager
 
+# validate credentials
 def valid_credentials(phone_number, email, password):
         # phone number must be of length 10 and all digits
         if len(phone_number) != 10 or not phone_number.isdigit():
@@ -17,8 +17,6 @@ def valid_credentials(phone_number, email, password):
             return False
         
         return True
-
-
 
 def main():
     def register():
