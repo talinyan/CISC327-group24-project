@@ -39,6 +39,18 @@ class ShoppingCart:
         })      
         return "Cart updated."
     
+    def remove_item(self, restaurant_name, item_name):
+        for cart_item in self.cart:
+            if cart_item.get(restaurant_name) is not None:
+                if item_name in cart_item[restaurant_name]:
+                    # If the item is found in the cart, remove it.
+                    del cart_item[restaurant_name][item_name]
+                    # If there are no more items for the restaurant, remove the restaurant from the cart.
+                    if not cart_item[restaurant_name]:
+                        self.cart.remove(cart_item)
+                    return "Item removed from the cart."
+        return "Item not found in the cart."
+    
     def cancel_order(self):
         self.cart = []
 
