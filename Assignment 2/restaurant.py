@@ -3,6 +3,8 @@ from menu import Item, RestaurantMenu
 
 restaurant_file = 'restaurant2.csv'
 
+
+
 class Restaurant:
     def __init__(self, id_num, name, address, category, price_range, open_time, close_time):
         self.id_num = id_num
@@ -27,7 +29,13 @@ class Restaurant:
             print(f"No menu available for {self.name}")
 
 
-
+restaurants_all = []
+with open(restaurant_file, 'r', newline='') as csvfile:
+    reader = csv.reader(csvfile)
+    next(reader) 
+    for row in reader:
+        restaurant = Restaurant(row[0], row[1], row[2], row[3], row[4], row[5], row[6])
+        restaurants_all.append(restaurant)
 # Example usage:
 # if __name__ == "__main__":
 #     restaurant_id = '1'
