@@ -1,9 +1,7 @@
 import csv
 from menu import Item, RestaurantMenu
 
-restaurant_file = 'restaurant2.csv'
-
-
+restaurant_file = "restaurant2.csv" # change to absolute path to this directory to work
 
 class Restaurant:
     def __init__(self, id_num, name, address, category, price_range, open_time, close_time):

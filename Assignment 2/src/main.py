@@ -42,13 +42,18 @@ def register():
         if valid_credentials(phone_number, email, password):
             profiles.append(UserProfile(address, phone_number, name, email, password))
             break
+        else: # allow user to exit to main menu after incorrect registration attempt
+            exit_check = input("Enter 'r' to retry registration, anything else to exit: ")
+            if exit_check != 'r':
+                break
 
 # Function to log in a user
 def login():
     if not profiles:  # Check if there are no user profiles
-        return print("Please register first")
+        return print("Please register first.")
         
     while True:
+        # allow user to exit to main menu after incorrect login attempt
         email = input("Enter your email: ")
         password = input("Enter your password: ")
         for p in profiles:
@@ -56,6 +61,11 @@ def login():
                 print(f"You have logged in successfully.\n")
                 return p
         print("Invalid email or password. Please try again.\n")
+        
+        # allow user to exit to main menu after incorrect login attempt
+        exit_check = input("Enter 'r' to retry login, anything else to exit: ")
+        if exit_check != 'r':
+            break
 
 # Function to modify the user's profile
 def modify_profile():
@@ -86,9 +96,10 @@ def modify_payment():
 
 # Function to view the list of available restaurants
 def view_restaurants():
-    print("List of available restaurants:")
+    print("\nList of available restaurants:")
     for restaurant in restaurants_all:
         print(restaurant.name)
+    print("")
 
 # Function to view the menu of a specific restaurant
 def view_menu():
@@ -97,7 +108,7 @@ def view_menu():
         if restaurant.name == restaurant_name:
             restaurant.show_menu()
             return
-    print("Restaurant not found.")
+    print("Restaurant not found.\n")
 
 # Function to add an item to the shopping cart
 def add_to_cart():
