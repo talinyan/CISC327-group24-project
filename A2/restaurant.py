@@ -1,7 +1,9 @@
 import csv
 from menu import Item, RestaurantMenu
 
-restaurant_file = "C:/Users/trayb/Documents/School Files/University/Courses/Fall23/CISC327/CISC327-group24-project/Assignment 2/src/restaurant2.csv" # change to absolute path to this directory to work
+restaurant_file = 'restaurant2.csv'
+
+
 
 class Restaurant:
     def __init__(self, id_num, name, address, category, price_range, open_time, close_time):

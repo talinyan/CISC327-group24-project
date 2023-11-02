@@ -1,7 +1,7 @@
 import csv
 
 # Define the CSV file containing restaurant menus
-menu_file = "C:/Users/trayb/Documents/School Files/University/Courses/Fall23/CISC327/CISC327-group24-project/Assignment 2/src/restaurant-menus2.csv" # change to absolute path to this directory to work
+menu_file = 'restaurant-menus2.csv'
 
 # Class to represent an individual menu item
 class Item:

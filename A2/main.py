@@ -2,17 +2,13 @@
 from restaurant import Restaurant, restaurants_all
 from shopping_cart import ShoppingCart
 from menu import RestaurantMenu, Item
-import pymongo
-
-# Access MongoDB database
-mongo_url = 'mongodb+srv://group24:eyljlgY1EkNeE8AB@group24-project.rv8qyhx.mongodb.net/?retryWrites=true&w=majority'
-client = pymongo.MongoClient(mongo_url)
-db = client['backend-database'] # database
-users_table = db['users'] # users table
-restaurants_table = db['restaurants'] # restaurants table
+from profile_manager import UserProfile
 
 # Create a shopping cart for the current user
 user_cart = ShoppingCart()
+
+# Initialize an empty list to store user profiles
+profiles = []
 
 # Initialize the current user profile as None (no user logged in)
 cur_profile = None
@@ -44,49 +40,22 @@ def register():
         address = input("Enter your address: ")
         password = input("Choose a password (must be at least 8 characters): ")
         if valid_credentials(phone_number, email, password):
-            user_data = { # arrange data into row format
-                "name": name,
-                "phone_number": phone_number,
-                "email": email,
-                "address": address,
-                "password": password,
-                "payment_methods": []    
-            }
-            users_table.insert_one(user_data) # add row to table
-            print("Account created for Bob. Please login.\n")
+            profiles.append(UserProfile(address, phone_number, name, email, password))
             break
-        else: # allow user to exit to main menu after incorrect registration attempt
-            exit_check = input("Enter 'r' to retry registration, anything else to exit: ")
-            if exit_check != 'r':
-                break
 
 # Function to log in a user
 def login():
-    if len(list(users_table.find())) == 0: # empty users table
-        return print("Please register first.")
+    if not profiles:  # Check if there are no user profiles
+        return print("Please register first")
         
     while True:
-        # allow user to exit to main menu after incorrect login attempt
         email = input("Enter your email: ")
         password = input("Enter your password: ")
-
-        search_criteria = {
-            "email": email, 
-            "password": password
-        }
-        user_found = users_table.find_one(search_criteria)
-
-        if user_found:
-            print(f"You have logged in successfully.\n")
-            print(user_found)
-            return user_found
-        else:
-            print("Invalid email or password. Please try again.\n")
-        
-        # allow user to exit to main menu after incorrect login attempt
-        exit_check = input("Enter 'r' to retry login, anything else to exit: ")
-        if exit_check != 'r':
-            break
+        for p in profiles:
+            if p.login(email, password):
+                print(f"You have logged in successfully.\n")
+                return p
+        print("Invalid email or password. Please try again.\n")
 
 # Function to modify the user's profile
 def modify_profile():
@@ -96,111 +65,30 @@ def modify_profile():
         address = input("Enter your new address: ")
         old_password = input("Enter your old password: ")
         new_password = input("Choose a new password (must be at least 8 characters): ")
-
-        if valid_credentials(phone_number, email, new_password) and old_password == cur_profile['password']:
-            cur_profile['phone_number'] = phone_number
-            cur_profile['email'] = email
-            cur_profile['address'] = address
-            cur_profile['password'] = new_password
-
-            # update profile in database with modified profile info
-            users_table.update_one(
-                {"_id": cur_profile["_id"]},
-                {"$set": cur_profile}
-            )
-            print("Profile information changed successfully.\n")
+        if valid_credentials(phone_number, email, new_password):
+            cur_profile.modify_profile(address, phone_number, email, old_password, new_password)
             break
-        else:
-            print("Invalid password. Please try again.")
-            # allow user to exit to main menu after incorrect password attempt
-            exit_check = input("Enter 'r' to retry password, anything else to exit: ")
-            if exit_check != 'r':
-                break
-
-def show_profile():
-    print(f"Name: {cur_profile['name']}       Email: {cur_profile['email']}        Address: {cur_profile['address']}     Phone Number: {cur_profile['phone_number']}\n")
 
 # Function to add a payment method to the current user's profile
 def add_payment():
     cc = input("Enter your credit card information: ")
     name = input("Enter the name on the card: ")
     address = input("Enter the address on the card: ")
-    payment_data = {
-        "credit_card": cc,
-        "card_name": name,
-        "billing_address": address
-    }
-    cur_profile['payment_methods'].append(payment_data)
-
-    # update profile in database with new payment info
-    update_payment_db()
-    print("Payment method added.\n")
+    cur_profile.payment_manager.add_payment(cc, name, address)
 
 # Function to modify an existing payment method
 def modify_payment():
-    while True:
-        id = int(input("Enter the id of the payment method to modify: "))
-        if id >= len(cur_profile['payment_methods']) or id < 0:
-            print("Invalid id. Please try again.")
-            # allow user to exit to main menu after incorrect id attempt
-            exit_check = input("Enter 'r' to retry id, anything else to exit: ")
-            if exit_check != 'r':
-                break
-        else:
-            cc = input("Enter your credit card numbers: ")
-            name = input("Enter the name on the card: ")
-            address = input("Enter the address on the card: ")
-            payment_data = {
-                "credit_card": cc,
-                "card_name": name,
-                "billing_address": address
-            }
-            cur_profile['payment_methods'][id] = payment_data
-
-            # update profile in database with modified payment info
-            update_payment_db()
-            print("Payment method modified.\n")
-            break
-
-# Function to remove payment method
-def remove_payment():
-    while True:
-        id = int(input("Enter the id of the payment method to remove: "))
-        if id >= len(cur_profile['payment_methods']) or id < 0:
-            print("Invalid id. Please try again.")
-            # allow user to exit to main menu after incorrect id attempt
-            exit_check = input("Enter 'r' to retry id, anything else to exit: ")
-            if exit_check != 'r':
-                break
-        else:
-            cur_profile['payment_methods'].pop(id)
-            # update profile in database with removed payment info
-            update_payment_db()
-            print("Payment method removed.\n")
-            break
-
-# Function to update payment methods in backend database (adding, modifying, & removing payments)
-def update_payment_db():
-    users_table.update_one(
-        {"_id": cur_profile["_id"]},
-        {"$set": cur_profile}
-    )
-
-# Function to show all payment methods for logged in user
-def show_payments():
-    if len(cur_profile['payment_methods']) == 0:
-        print(f"No payment methods found for {cur_profile['name']}.")
-
-    for payment in cur_profile['payment_methods']:
-        print(f"Credit card: {payment['credit_card']}      Name on card: {payment['card_name']}       Billing address: {payment['billing_address']}")
-    print()
+    id = int(input("Enter the id of the payment method to modify: "))
+    cc = input("Enter your credit card information: ")
+    name = input("Enter the name on the card: ")
+    address = input("Enter the address on the card: ")
+    cur_profile.payment_manager.modify_payment(id, cc, name, address)
 
 # Function to view the list of available restaurants
 def view_restaurants():
-    print("\nList of available restaurants:")
+    print("List of available restaurants:")
     for restaurant in restaurants_all:
         print(restaurant.name)
-    print("")
 
 # Function to view the menu of a specific restaurant
 def view_menu():
@@ -209,7 +97,7 @@ def view_menu():
         if restaurant.name == restaurant_name:
             restaurant.show_menu()
             return
-    print("Restaurant not found.\n")
+    print("Restaurant not found.")
 
 # Function to add an item to the shopping cart
 def add_to_cart():
@@ -246,8 +134,8 @@ def view_cart():
 def check_out():
     user_cart_total = user_cart.cart_total_price()
     print(f"Total price in the cart: ${user_cart_total:.2f}")
-    # gets card number of 1st payment method, need logic for checking if payment methods exist & selecting one
-    card_number = cur_profile['payment_methods'][0]['card_number']
+    #show card number i will add logic later
+    card_number = cur_profile.payment_manager.id
     print(f"Card on file: {card_number}")
 
     # Ask the user if they want to pay with the card on file
@@ -261,7 +149,7 @@ def check_out():
 
 # Function to print the menu options for a logged-in user
 def print_options():
-    print(f"Hello {cur_profile['name']}. Please choose one of the options below.")
+    print(f"Hello {cur_profile.name}. Please choose one of the options below.")
     print("1. View restaurants")
     print("2. View restaurant menu")
     print("3. Add item to cart")
@@ -315,14 +203,14 @@ while True:
             cur_profile = None
             print("You have logged out.\n")
         elif choice == "8":
-            show_profile()
+            cur_profile.show_profile()
         elif choice == "9":
             modify_profile()
         elif choice == "10":
             print(f"\nPlease choose one of the options below.")
             print("0: Add payment method")
-            print("1: Modify payment method")
-            print("2: Remove payment method")
+            print("1: Remove payment method")
+            print("2: Modify payment method")
             print("3: Show all payment methods")
             num = (int)(input("Enter choice: "))
             if num == 0:
@@ -330,9 +218,10 @@ while True:
             elif num == 1:
                 modify_payment()
             elif num == 2:
-                remove_payment()
+                id = int(input("Enter the id of the payment method to remove:"))
+                cur_profile.payment_manager.remove_payment(id)
             elif num == 3:
-                    show_payments()
+                    cur_profile.payment_manager.show_payments()
             else:
                 print("Invalid option return to main menu")
         elif choice == "11":
