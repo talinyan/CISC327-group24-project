@@ -14,12 +14,8 @@ restaurants_table = db['restaurants'] # restaurants table
 # Create a shopping cart for the current user
 user_cart = ShoppingCart()
 
-# Initialize a list with all profiles from the database
-#profiles = list(users_table.find())
-
 # Initialize the current user profile as None (no user logged in)
 cur_profile = None
-
 
 # Function to validate user credentials
 def valid_credentials(phone_number, email, password):
@@ -270,7 +266,6 @@ def print_options():
 
 # Main application loop
 while True:
-    #print(profiles)
     if cur_profile is None:  # If no user is logged in
         print("Hello, welcome to our delivery app. Please choose one of the options below.")
         print("0: Register")
