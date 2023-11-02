@@ -112,6 +112,10 @@ def modify_profile():
             break
         else:
             print("Invalid password. Please try again.")
+            # allow user to exit to main menu after incorrect password attempt
+            exit_check = input("Enter 'r' to retry password, anything else to exit: ")
+            if exit_check != 'r':
+                break
 
 def show_profile():
     print(f"Name: {cur_profile['name']}       Email: {cur_profile['email']}        Address: {cur_profile['address']}     Phone Number: {cur_profile['phone_number']}\n")
@@ -138,6 +142,10 @@ def modify_payment():
         id = int(input("Enter the id of the payment method to modify: "))
         if id >= len(cur_profile['payment_methods']) or id < 0:
             print("Invalid id. Please try again.")
+            # allow user to exit to main menu after incorrect id attempt
+            exit_check = input("Enter 'r' to retry id, anything else to exit: ")
+            if exit_check != 'r':
+                break
         else:
             cc = input("Enter your credit card numbers: ")
             name = input("Enter the name on the card: ")
@@ -152,6 +160,7 @@ def modify_payment():
             # update profile in database with modified payment info
             update_payment_db()
             print("Payment method modified.\n")
+            break
 
 # Function to remove payment method
 def remove_payment():
@@ -159,6 +168,10 @@ def remove_payment():
         id = int(input("Enter the id of the payment method to remove: "))
         if id >= len(cur_profile['payment_methods']) or id < 0:
             print("Invalid id. Please try again.")
+            # allow user to exit to main menu after incorrect id attempt
+            exit_check = input("Enter 'r' to retry id, anything else to exit: ")
+            if exit_check != 'r':
+                break
         else:
             cur_profile['payment_methods'].pop(id)
             # update profile in database with removed payment info
