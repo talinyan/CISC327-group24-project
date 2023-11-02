@@ -227,10 +227,18 @@ def view_cart():
 
 # Function to check out and complete the order
 def check_out():
+    if len(user_cart.cart) == 0:
+        print("Add items to cart to check out.\n")
+        return
     user_cart_total = user_cart.cart_total_price()
     print(f"Total price in the cart: ${user_cart_total:.2f}")
-    # gets card number of 1st payment method, need logic for checking if payment methods exist & selecting one
-    card_number = cur_profile['payment_methods'][0]['card_number']
+
+    # check to make sure payment method has been added
+    if len(cur_profile.payment_methods) == 0:
+        print("No payment methods added. Return to main menu to add.")
+        return
+
+    card_number = cur_profile.payment_methods[0]['credit_card']
     print(f"Card on file: {card_number}")
 
     # Ask the user if they want to pay with the card on file

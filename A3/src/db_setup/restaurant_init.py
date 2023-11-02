@@ -1,8 +1,23 @@
 import pymongo
-from restaurant import restaurants_all
+import csv
+from restaurant_init_helper import Restaurant
 
 # When running this file, accesses all restaurants and their menus, and allows
 # adding them to DB table, viewing the DB table, or dropping the table.
+restaurant_file = "C:/Users/trayb/Documents/School Files/University/Courses/Fall23/CISC327/CISC327-group24-project/A3/src/db_setup/restaurant.csv"
+
+restaurants_all = []
+with open(restaurant_file, 'r', newline='') as csvfile:
+    reader = csv.reader(csvfile)
+    next(reader) 
+    for row in reader:
+        # order of rows:
+        # id 0, name 1, category 2, price_range 3, address 4, open_time 5, close_time 6
+
+        # order of restaurant in table:
+        # id, name, address, category, price_range, open_time, close_time
+        restaurant = Restaurant(row[0], row[1], row[4], row[2], row[3], row[5], row[6])
+        restaurants_all.append(restaurant)
 
 def main():
     # Access MongoDB database

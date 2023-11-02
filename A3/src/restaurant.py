@@ -1,7 +1,7 @@
 import csv
 
 # Define the CSV files containing menus for initialization
-menu_file = "C:/Users/trayb/Documents/School Files/University/Courses/Fall23/CISC327/CISC327-group24-project/A3/src/db_setup/restaurant-menus2.csv" # change to absolute path to this directory to work
+menu_file = "C:/Users/trayb/Documents/School Files/University/Courses/Fall23/CISC327/CISC327-group24-project/A3/src/db_setup/restaurant-menus.csv" # change to absolute path to this directory to work
 
 class Restaurant:
     def __init__(self, id_num, name, address, category, price_range, open_time, close_time, menu=None):
@@ -52,7 +52,6 @@ class Restaurant:
         else:
             print(f"No menu available for {self.name}")
         print("")
-
 
 # Example usage:
 # if __name__ == "__main__":
