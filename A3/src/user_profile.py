@@ -1,12 +1,18 @@
 class UserProfile:
-    def __init__(self, address, phone_number, name, password, email, payment_methods=[]):
+    def __init__(self, address, phone_number, name, email, password, payment_methods=[]):
+        self.register(address, phone_number, name, email, password, payment_methods)
+    
+    def register(self, address, phone_number, name, email, password, payment_methods=[]):
+        if not self.valid_credentials(phone_number, email, password):
+            return "Invalid phone number. Please try again."
         self.address = address
         self.phone_number = phone_number
         self.name = name
-        self.password = password
         self.email = email
+        self.password = password
         self.payment_methods = payment_methods
-    
+        return "Account created for " + name + ". Please login."
+
     def valid_credentials(self, phone_number, email, password):
         # phone number must be of length 10 and all digits
         if len(phone_number) != 10 or not phone_number.isdigit():
@@ -44,6 +50,7 @@ class UserProfile:
             "billing_address": payment_info["billing_address"],
             "card_name": payment_info["first_name"] + payment_info["last_name"]
         })
+        return "Payment method modified."
     
     def modify_profile(self, address, phone_number, email, old_password, new_password):
         if self.password == old_password:
@@ -61,14 +68,20 @@ class UserProfile:
     
     def login(self, email, password):
         if self.password == password and self.email == email:
-            return True
+            return "You have logged in successfully."
         else:
-            return False
+            return "Invalid email or password. Please try again."
 
-# Example usage:
-#     bob = UserProfile("999 Bob Street", "1112223333", "Bob", "bob@gmail.com", "password123")
-#     bob.show_profile()
-#     bob.modify_profile("888 Bob Street", "2223334444", "bob2@gmail.com", "password124", "password321")
-#     bob.show_profile()
-#     bob.modify_profile("888 Bob Street", "2223334444", "bob2@gmail.com", "password123", "password321")
-#     bob.show_profile()
+
+test_user = UserProfile("Test Address", "1234567890", "Test User", "test@test.com", "password123")
+
+# Modify the profile information
+new_phone_number = "9876543210"
+new_email = "newemail@test.com"
+new_address = "New Address"
+old_password = "password123"
+new_password = "newpassword123"
+
+test_user.modify_profile(new_phone_number, new_email, new_address, old_password, new_password)
+
+test_user.show_profile()

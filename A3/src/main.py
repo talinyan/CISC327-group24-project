@@ -40,7 +40,7 @@ def register():
                 "payment_methods": []    
             }
             users_table.insert_one(user_data) # add row to table
-            users.append(UserProfile(address, phone_number, name, password, email))
+            users.append(UserProfile(address, phone_number, name, email, password))
             print("Account created for Bob. Please login.\n")
             break
         else: # allow user to exit to main menu after incorrect registration attempt
@@ -59,10 +59,10 @@ def login():
         password = input("Enter your password: ")
         for user in users:
             if user.email == email and user.password == password:
-                print(f"You have logged in successfully.\n")
+                print(cur_profile.login(email, password))
                 return user
         else:
-            print("Invalid email or password. Please try again.\n")
+            print(cur_profile.login(email, password))
         
         # allow user to exit to main menu after incorrect login attempt
         exit_check = input("Enter 'r' to retry login, anything else to exit: ")
@@ -214,10 +214,11 @@ def add_to_cart():
         if restaurant.name == restaurant_name:
             for item in restaurant.menu.keys():
                 if item == item_name:
-                    user_cart.add_item(restaurant.menu[item], restaurant, quantity)
+                    user_cart.add_item(restaurant.menu[item], restaurant.name, quantity)
                     print("Item added to the cart.\n")
-                    return
+                    return "Item added to the cart."
     print("Restaurant or item not found.")
+    return "Restaurant or item not found."
 
 # Function to remove an item from the shopping cart
 def remove_from_cart():
@@ -237,28 +238,7 @@ def view_cart():
 
 # Function to check out and complete the order
 def check_out():
-    if len(user_cart.cart) == 0:
-        print("Add items to cart to check out.\n")
-        return
-    user_cart_total = user_cart.cart_total_price()
-    print(f"Total price in the cart: ${user_cart_total:.2f}")
-
-    # check to make sure payment method has been added
-    if len(cur_profile.payment_methods) == 0:
-        print("No payment methods added. Return to main menu to add.")
-        return
-
-    card_number = cur_profile.payment_methods[0]['credit_card']
-    print(f"Card on file: {card_number}")
-
-    # Ask the user if they want to pay with the card on file
-    choice = input("Do you wish to pay with this card? (yes/no): ")
-
-    if choice.lower() == "yes":
-        print("Payment successful. Order has been placed.")
-        user_cart.cancel_order()  # Clear the shopping cart after a successful order
-    else:
-        print("Order not placed. Returning to the main menu to update payment.")
+    user_cart.check_out(cur_profile.payment_methods)
 
 # Function to print the menu options for a logged-in user
 def print_options():
@@ -298,8 +278,8 @@ for user in users_list:
         user['address'],
         user['phone_number'],
         user['name'],
-        user['password'],
         user['email'],
+        user['password'],
         user['payment_methods']
     ))
 
