@@ -4,11 +4,10 @@ from restaurant import Restaurant
 import unittest
 
 
-#helper functions: to view the list of available restaurants
+# Helper function: to view the list of available restaurants
 def view_restaurants(restaurants):
     restaurant_list = [restaurant.name for restaurant in restaurants]
     return restaurant_list
-
 
 
 class TestApp(unittest.TestCase):
@@ -72,13 +71,20 @@ class TestApp(unittest.TestCase):
     def test_check_out(self):
         # Set the current user profile to the test user
         cur_profile = self.user
+        cur_profile.add_payment({
+            "credit_card": "1111222233334444",
+            "cvv": "111",
+            "billing_address": "123 test street",
+            "first_name": "Jill",
+            "last_name": "Doe"
+        })
 
         # Add items to the shopping cart
-        item1 = {"name": "Item1", "price": 10.0, "quantity": 2}
-        item2 = {"name": "Item2", "price": 5.0, "quantity": 3}
+        item1 = {"item_name": "Item1", "price": 10.0, "category": "food1", "description": "food1"}
+        item2 = {"item_name": "Item2", "price": 5.0, "category": "food2", "description": "food2"}
 
-        self.cart.add_item(item1, self.restaurant)
-        self.cart.add_item(item2, self.restaurant)
+        self.cart.add_item(item1, self.restaurant, 2)
+        self.cart.add_item(item2, self.restaurant, 3)
 
         # Perform the checkout
         payment_message = self.cart.check_out(cur_profile.payment_methods, "yes")
@@ -89,7 +95,7 @@ class TestApp(unittest.TestCase):
 
     def test_modify_profile(self):
         # Initialize a test user profile
-        test_user = UserProfile("Test Address", "1234567890", "Test User", "test@test.com", "password123")
+        test_user = UserProfile("Test User", "test@test.com", "1234567890", "Test Address", "password123")
         
         # Modify the profile information
         new_phone_number = "9876543210"
@@ -98,7 +104,15 @@ class TestApp(unittest.TestCase):
         old_password = "password123"
         new_password = "newpassword123"
         
-        test_user.modify_profile(new_address, new_phone_number, new_email, old_password, new_password)
+        # Ensure old password is same as stored one
+        self.assertEqual(test_user.password, old_password)
+
+        # Ensure new profile information meets criteria
+        result = test_user.valid_credentials(new_email, new_phone_number, new_password)
+        self.assertTrue(result)
+
+        # Modify profile
+        test_user.modify_profile(new_email, new_phone_number, new_address, new_password)
         
         # Check if the profile information is modified
         self.assertEqual(test_user.phone_number, new_phone_number)
@@ -106,39 +120,45 @@ class TestApp(unittest.TestCase):
         self.assertEqual(test_user.address, new_address)
         self.assertEqual(test_user.password, new_password)
 
-
     def test_user_registration(self):
         # Initialize a test user profile
-        test_user = UserProfile("", "", "", "", "")
         
-        # Test valid user registration
         valid_name = "Test User"
         valid_phone_number = "1234567890"
         valid_email = "test@test.com"
         valid_address = "Test Address"
         valid_password = "password123"
-        
-        registration_result = test_user.register(valid_address, valid_phone_number, valid_name, valid_email, valid_password)
-        
+
+        # Test valid user registration
+        test_user = UserProfile(valid_name, valid_email, valid_phone_number, valid_address, valid_password)
+                
         # Check if the registration was successful
-        self.assertEqual(registration_result, "Account created for Test User. Please login.")
+        self.assertEqual(test_user.name, valid_name)
+        self.assertEqual(test_user.phone_number, valid_phone_number)
+        self.assertEqual(test_user.email, valid_email)
+        self.assertEqual(test_user.address, valid_address)
+        self.assertEqual(test_user.password, valid_password)
 
         # Test invalid user registration (e.g., invalid phone number)
         invalid_name = "Invalid User"
-        invalid_phone_number = "invalid"
         invalid_email = "invalid_email.com"
+        invalid_phone_number = "invalid"
         invalid_address = "Invalid Address"
         invalid_password = "short"
-        
-        registration_result = test_user.register(invalid_address, invalid_phone_number, invalid_name, invalid_email, invalid_password)
-        
-        # Check if the registration fails with invalid inputs
-        self.assertEqual(registration_result, "Invalid phone number. Please try again.")
 
+        # Test invalid user registration
+        invalid_test_user = UserProfile(invalid_name, invalid_email, invalid_phone_number, invalid_address, invalid_password)
+                
+        # Check if the registration fails with invalid inputs
+        self.assertNotEqual(invalid_test_user.name, invalid_name)
+        self.assertNotEqual(invalid_test_user.email, invalid_email)
+        self.assertNotEqual(invalid_test_user.phone_number, invalid_phone_number)
+        self.assertNotEqual(invalid_test_user.address, invalid_address)
+        self.assertNotEqual(invalid_test_user.password, invalid_password)
 
     def test_user_login_valid(self):
         # Initialize a test user profile
-        test_user = UserProfile("Test Address", "1234567890", "Test User", "test@test.com", "password123")
+        test_user = UserProfile("Test User", "test@test.com", "1234567890", "Test Address", "password123")
         
         # Test valid user login
         valid_email = "test@test.com"
@@ -151,7 +171,7 @@ class TestApp(unittest.TestCase):
 
     def test_user_login_invalid(self):
         # Initialize a test user profile
-        test_user = UserProfile("Test Address", "1234567890", "Test User", "test@test.com", "password123")
+        test_user = UserProfile("Test User", "test@test.com", "1234567890", "Test Address", "password123")
         
         # Test invalid user login with incorrect email
         invalid_email = "invalid_email@test.com"
@@ -171,104 +191,145 @@ class TestApp(unittest.TestCase):
         # Check if the login fails with incorrect password
         self.assertEqual(login_result, "Invalid email or password. Please try again.")
 
-
     def test_view_restaurants(self):
-        # Call the view_restaurants function with the test restaurants list
-        restaurant_names = view_restaurants(self.restaurants)
+        # Get all restaurants
+        restaurants = view_restaurants(self.restaurants)
+        print(restaurants)
 
-        # Check if the list of restaurant names matches the expected result
-        expected_names = ["Restaurant A", "Restaurant B", "Restaurant C"]
-        self.assertEqual(restaurant_names, expected_names)
-
-        # Set the current user profile to the test user
-        cur_profile = self.user
-
-        # Add a test restaurant to the list of restaurants
-        test_restaurant = Restaurant("4", "Test Restaurant", "Test Address", "Test Category", "$$", "10:00 AM", "9:00 PM", {
-            "Item1": {"name": "Item1", "price": 10.0},
-            "Item2": {"name": "Item2", "price": 5.0},
-        })
-        self.restaurants.append(test_restaurant)
-
-        # Call the view_menu function with the test restaurant name
-        restaurant_name = "Test Restaurant"
-        expected_menu = {
-            "Item1": {"name": "Item1", "price": 10.0},
-            "Item2": {"name": "Item2", "price": 5.0},
+        # Check list of restaurants matches expected result
+        expected_restaurants = ["Restaurant A", "Restaurant B", "Restaurant C"]
+        self.assertEqual(restaurants, expected_restaurants)
+        
+        # Create a new restaurant with a menu
+        some_menu = {
+            "hamburger": {
+                "name": "Hamburger",
+                "category": "American",
+                "description": "American Hamburger with bun",
+                "price": 7.99
+            }
         }
-        menu = cur_profile.view_menu(restaurant_name, self.restaurants)
+        new_restaurant = Restaurant("1", "Restaurant D", "Address D", "Category D", "$$$", "8:00 AM", "10:00 PM", some_menu)
+
+        # Call show menu
+        menu_message = new_restaurant.show_menu()
+
+        # Expected message
+        expected_message = "Hamburger - 7.99\n"
 
         # Check if the menu matches the expected result
-        self.assertEqual(menu, expected_menu)
+        self.assertEqual(expected_message, menu_message)
     
     def test_add_to_cart(self):
         # Create a test cart
-        user_cart = self.cart
+        cart = ShoppingCart()
 
-        # Add a test restaurant to the list of restaurants
-        test_restaurant = Restaurant("4", "Test Restaurant", "Test Address", "Test Category", "$$", "10:00 AM", "9:00 PM", {
-            "Item1": {"name": "Item1", "price": 10.0},
-            "Item2": {"name": "Item2", "price": 5.0},})
-
-        # Call the add_to_cart function to add an item
-        restaurant_name = "Test Restaurant"
+        # Create a test item and restaruant name
+        restaurant_name = "Amazing Restaurant"
         item = {
-            
+            "item_name": "Item1",
+            "category": "Some",
+            "description": "Filler",
+            "price": 2
         }
-        quantity = 2
-        expected_message = "Item added to the cart."
 
-        message = user_cart.add_item(item_name, restaurant_name, quantity)
+        # Add item to the cart
+        cart.add_item(item, restaurant_name)
 
-        # Check if the message matches the expected result
-        self.assertEqual(message, expected_message)
+        # Get shopping cart
+        cart_after = cart.get_cart()
+
+        # Expected cart
+        expected_cart = [
+            {"Amazing Restaurant": {
+                "Item1": {
+                    "quantity": 1,
+                    "price": 2
+                }
+            }}
+        ]
+
+        # Check to make sure cart is as expected
+        self.assertEqual(cart_after, expected_cart)
 
     def test_remove_from_cart(self):
         # Create a test cart
-        user_cart = self.cart
+        cart = ShoppingCart()
 
-        # Add an item to the cart
-        user_cart.add_item("Item1", "Test Restaurant", 2)
+        # Create a test item and restaruant name
+        restaurant_name = "Amazing Restaurant"
+        item = {
+            "item_name": "Item1",
+            "category": "Some",
+            "description": "Filler",
+            "price": 2
+        }
 
-        # Call the remove_from_cart function to remove an item
-        restaurant_name = "Test Restaurant"
-        item_name = "Item1"
-        expected_message = "Item removed from the cart."
+        # Add item to the cart
+        cart.add_item(item, restaurant_name)
 
-        message = user_cart.remove_item(restaurant_name, item_name)
+        # Remove item from cart
+        cart.remove_item(restaurant_name, item["item_name"])
 
-        # Check if the message matches the expected result
-        self.assertEqual(message, expected_message)
+        # Get shopping cart
+        cart_after = cart.get_cart()
 
-    # def test_cancel_order(self):
-    #     # Your test code for canceling an order
+        # Check to make sure cart is as expected (empty)
+        self.assertEqual(cart_after, [])
+
+    def test_cancel_order(self):
+        # Create a test cart
+        cart = ShoppingCart()
+
+        # Create a test item and restaruant name
+        restaurant_name = "Amazing Restaurant"
+        item = {
+            "item_name": "Item1",
+            "category": "Some",
+            "description": "Filler",
+            "price": 2
+        }
+
+        # Add item to the cart
+        cart.add_item(item, restaurant_name)
+
+        # Clear cart
+        cart.cancel_order()
+
+        # Get shopping cart
+        cart_after = cart.get_cart()
+
+        # Check to make sure cart is as expected (empty)
+        self.assertEqual(cart_after, [])
 
     def test_cart_total_price(self):
-        # Set the current user profile to the test user
-        cur_profile = self.user
+        # Create a test cart
+        cart = ShoppingCart()
 
-        # Add a test restaurant to the list of restaurants
-        test_restaurant = Restaurant("4", "Test Restaurant", "Test Address", "Test Category", "$$", "10:00 AM", "9:00 PM", {
-            "Item1": {"name": "Item1", "price": 10.0},
-            "Item2": {"name": "Item2", "price": 5.0},})
+        # Create a test item and restaruant name
+        restaurant_name = "Amazing Restaurant"
+        item = {
+            "item_name": "Item1",
+            "category": "Some",
+            "description": "Filler",
+            "price": 2
+        }
 
-        # Add items to the cart
-        cur_profile.add_to_cart("Test Restaurant", "Item1", 2, self.restaurants)
-        cur_profile.add_to_cart("Test Restaurant", "Item2", 3, self.restaurants)
+        # Add 2 of item to the cart
+        cart.add_item(item, restaurant_name, 2)
 
         # Calculate the total price using the cart_total_price function
-        total_price = cur_profile.cart_total_price()
+        total_price = cart.cart_total_price()
 
         # Calculate the expected total price based on the added items
-        expected_total_price = (2 * 10) + (3 * 5)
+        expected_total_price = 2 * 2
 
         # Check if the calculated total price matches the expected total price
         self.assertEqual(total_price, expected_total_price)
 
     def test_valid_item_quantity(self):
-        # Create a test user profile and a shopping cart
-        cur_profile = self.user
-        cart = self.cart
+        # Create a test shopping cart
+        cart = ShoppingCart()
 
         # Define a valid item quantity
         valid_quantity = 5
@@ -278,7 +339,6 @@ class TestApp(unittest.TestCase):
 
         # Assert that the item quantity is valid
         self.assertTrue(is_valid)
-
 
     def test_invalid_item_quantity(self):
         # Create a test shopping cart

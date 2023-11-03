@@ -36,6 +36,7 @@ class Restaurant:
         self.menu = menu
 
     def show_menu(self):
+        string = ""
         if self.menu:
             items = self.menu.keys()
 
@@ -47,11 +48,12 @@ class Restaurant:
                 print(f"Category: {category}") 
                 for item in items:
                     if self.menu[item]['category'] == category:
-                        print(f"{item} - {self.menu[item]['description']} - ${self.menu[item]['price']}")
+                        print(f"{item} - {self.menu[item]['description']} - ${self.menu[item]['price']}\n")
+                        string += f"{item} - {self.menu[item]['description']} - ${self.menu[item]['price']}\n"
                 print("")
         else:
             print(f"No menu available for {self.name}")
-        print("")
+        return string
 
 # Example usage:
 # if __name__ == "__main__":

@@ -3,23 +3,15 @@ class ShoppingCart:
         self.cart = []
 
     def add_item(self, item, restaurant_name, quantity=1):
-
-        #test in next assignment
-        # if self.is_valid_restaurant(restaurant, self.restaurants_all):
-        #     return "Restaurant not found in the master list."
-        
-        # if self.is_valid_item(item, restaurant):
-        #    return "Restaurant not found in the master list."
-
         for cart_item in self.cart:
             if cart_item.get(restaurant_name) != None: #check if the resaurant is in the cart
-                if item['name'] in cart_item[restaurant_name]:
+                if item['item_name'] in cart_item[restaurant_name]:
                     # If the item is already in the cart, update its quantity.
-                    cart_item[restaurant_name][item['name']]['quantity'] += quantity
+                    cart_item[restaurant_name][item['item_name']]['quantity'] += quantity
                     return "Item added to the cart."
                 else:
                     # If the restaurant is in the cart but the item is not, add the item.
-                    cart_item[restaurant_name][item['name']] = {
+                    cart_item[restaurant_name][item['item_name']] = {
                         'quantity': quantity,
                         'price': item['price']
                     }
@@ -28,7 +20,7 @@ class ShoppingCart:
         # If the restaurant is not in the cart, add it along with the item.
         self.cart.append({
             restaurant_name: {
-                item['name']: {
+                item['item_name']: {
                     'quantity': quantity,
                     'price': item['price']
                 }
@@ -88,15 +80,17 @@ class ShoppingCart:
         
     def view_cart(self):
         if not self.valid_item_quantity(len(self.cart)):
-            print("Your shopping cart is empty.\n")
-            return
-
+            return "Your shopping cart is empty."
+            
         print("Your Shopping Cart:")
         for cart_item in self.cart:
             for restaurant_name, items in cart_item.items():
                 for item_name, details in items.items():
                     print(f"{restaurant_name} - {item_name} ({details['quantity']} x ${details['price']:.2f})")
         print("")
+    
+    def get_cart(self):
+        return self.cart
 
     def valid_item_quantity(self, quantity):
         return quantity > 0

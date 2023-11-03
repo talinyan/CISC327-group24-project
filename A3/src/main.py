@@ -18,6 +18,7 @@ def valid_credentials(phone_number, email, password):
         
         if "@" not in email:
             print("Invalid email. Please try again.\n")
+            print('bruh')
             return False
         
         return True
@@ -39,9 +40,10 @@ def register():
                 "password": password,
                 "payment_methods": []    
             }
-            users_table.insert_one(user_data) # add row to table
-            users.append(UserProfile(address, phone_number, name, email, password))
-            print("Account created for Bob. Please login.\n")
+            new_insert = users_table.insert_one(user_data) # add row to table
+            users.append((UserProfile(name, email, phone_number, address, password), new_insert.inserted_id))
+            
+            print("Account created for " + name +". Please login.\n")
             break
         else: # allow user to exit to main menu after incorrect registration attempt
             exit_check = input("Enter 'r' to retry registration, anything else to exit: ")
@@ -58,11 +60,12 @@ def login():
         email = input("Enter your email: ")
         password = input("Enter your password: ")
         for user in users:
-            if user.email == email and user.password == password:
-                print(cur_profile.login(email, password))
+            user_info = user[0]
+            if user_info.email == email and user_info.password == password:
+                print("You have logged in successfully.")
                 return user
         else:
-            print(cur_profile.login(email, password))
+            print("Invalid email or password. Please try again.")
         
         # allow user to exit to main menu after incorrect login attempt
         exit_check = input("Enter 'r' to retry login, anything else to exit: ")
@@ -78,16 +81,15 @@ def modify_profile():
         old_password = input("Enter your old password: ")
         new_password = input("Choose a new password (must be at least 8 characters): ")
 
-        if valid_credentials(phone_number, email, new_password) and old_password == cur_profile['password']:
-            cur_profile['phone_number'] = phone_number
-            cur_profile['email'] = email
-            cur_profile['address'] = address
-            cur_profile['password'] = new_password
+
+        if valid_credentials(phone_number, email, new_password) and old_password == cur_profile[0].password:
+            cur_profile[0].modify_profile(email, phone_number, address, new_password)
 
             # update profile in database with modified profile info
+            
             users_table.update_one(
-                {"_id": cur_profile["_id"]},
-                {"$set": cur_profile}
+                {"_id": cur_profile[1]},
+                {"$set": cur_profile[0].get_profile()}
             )
             print("Profile information changed successfully.\n")
             break
@@ -99,14 +101,14 @@ def modify_profile():
                 break
 
 def show_profile():
-    print(f"Name: {cur_profile['name']}       Email: {cur_profile['email']}        Address: {cur_profile['address']}     Phone Number: {cur_profile['phone_number']}\n")
+    cur_profile[0].show_profile()
 
 # Function to add a payment method to the current user's profile
 def add_payment():
     credit_card = input("Enter your credit card numbers: ")
-    cvv = input("Enter your cvv:")
+    cvv = input("Enter your cvv: ")
     first_name = input("Enter the first name on the card: ")
-    last_name = input("Enter the last name on the card:")
+    last_name = input("Enter the last name on the card: ")
     billing_address = input("Enter the billing address on the card: ")
     payment_info = {
         "credit_card": credit_card,
@@ -115,7 +117,7 @@ def add_payment():
         "first_name": first_name,
         "last_name": last_name
     }
-    cur_profile.add_payment(payment_info)
+    cur_profile[0].add_payment(payment_info)
 
     # update profile in database with new payment info
     update_payment_db()
@@ -125,7 +127,7 @@ def add_payment():
 def modify_payment():
     while True:
         id = int(input("Enter the id of the payment method to modify: "))
-        if id >= len(cur_profile['payment_methods']) or id < 0:
+        if id >= len(cur_profile[0].payment_methods) or id < 0:
             print("Invalid id. Please try again.")
             # allow user to exit to main menu after incorrect id attempt
             exit_check = input("Enter 'r' to retry id, anything else to exit: ")
@@ -146,7 +148,7 @@ def modify_payment():
                 "last_name": last_name
             }
 
-            cur_profile.modify_payment(id, payment_info)
+            cur_profile[0].modify_payment(id, payment_info)
 
             # update profile in database with modified payment info
             update_payment_db()
@@ -157,14 +159,14 @@ def modify_payment():
 def remove_payment():
     while True:
         id = int(input("Enter the id of the payment method to remove: "))
-        if id >= len(cur_profile['payment_methods']) or id < 0:
+        if id >= len(cur_profile[0].payment_methods) or id < 0:
             print("Invalid id. Please try again.")
             # allow user to exit to main menu after incorrect id attempt
             exit_check = input("Enter 'r' to retry id, anything else to exit: ")
             if exit_check != 'r':
                 break
         else:
-            cur_profile.remove_payment(id)
+            cur_profile[0].remove_payment(id)
             # update profile in database with removed payment info
             update_payment_db()
             print("Payment method removed.\n")
@@ -173,18 +175,13 @@ def remove_payment():
 # Function to update payment methods in backend database (adding, modifying, & removing payments)
 def update_payment_db():
     users_table.update_one(
-        {"_id": cur_profile["_id"]},
-        {"$set": cur_profile}
+        {"_id": cur_profile[1]},
+        {"$set": cur_profile[0].get_profile()}
     )
 
 # Function to show all payment methods for logged in user
 def show_payments():
-    if len(cur_profile['payment_methods']) == 0:
-        print(f"No payment methods found for {cur_profile['name']}.")
-
-    for payment in cur_profile['payment_methods']:
-        print(f"Credit card: {payment['credit_card']}      Name on card: {payment['card_name']}       Billing address: {payment['billing_address']}")
-    print()
+    cur_profile[0].show_payments()
 
 # Function to view the list of available restaurants
 def view_restaurants():
@@ -238,11 +235,11 @@ def view_cart():
 
 # Function to check out and complete the order
 def check_out():
-    user_cart.check_out(cur_profile.payment_methods)
+    user_cart.check_out(cur_profile[0].payment_methods)
 
 # Function to print the menu options for a logged-in user
 def print_options():
-    print(f"Hello {cur_profile.name}. Please choose one of the options below.")
+    print(f"Hello {cur_profile[0].name}. Please choose one of the options below.")
     print("1. View restaurants")
     print("2. View restaurant menu")
     print("3. Add item to cart")
@@ -270,18 +267,17 @@ user_cart = ShoppingCart()
 
 # Initialize the current user profile as None (no user logged in)
 cur_profile = None
-
 # Load all users from DB into a list
 users_list = list(users_table.find())
 for user in users_list:
-    users.append(UserProfile(
-        user['address'],
-        user['phone_number'],
+    users.append((UserProfile(
         user['name'],
         user['email'],
+        user['phone_number'],
+        user['address'],
         user['password'],
         user['payment_methods']
-    ))
+    ), user['_id']))
 
 # Load all restaurants from DB into a list
 restaurant_list = list(restaurants_table.find())
@@ -328,7 +324,11 @@ while True:
         elif choice == "4":
             remove_from_cart()
         elif choice == "5":
-            view_cart()
+            cart_status = view_cart()
+            if cart_status:
+                print(cart_status)
+            else:
+                print("Empty cart.")
         elif choice == "6":
             check_out()
         elif choice == "7":
@@ -363,3 +363,4 @@ while True:
             break
         else:
             print("Invalid choice. Please select a valid option.")
+    print("")
