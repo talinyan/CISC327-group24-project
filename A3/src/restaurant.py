@@ -3,6 +3,8 @@ import csv
 # Define the CSV files containing menus for initialization
 menu_file = "C:/Users/trayb/Documents/School Files/University/Courses/Fall23/CISC327/CISC327-group24-project/A3/src/db_setup/restaurant-menus.csv" # change to absolute path to this directory to work
 
+# For creating and storing information about a restaruant, including: id, name, address, category, price range, opening time, closing time, and menu
+# Contains methods for initializing & viewing menu
 class Restaurant:
     def __init__(self, id_num, name, address, category, price_range, open_time, close_time, menu=None):
         self.id_num = id_num
@@ -35,6 +37,7 @@ class Restaurant:
                     }
         self.menu = menu
 
+    # Method to show restaurant menus
     def show_menu(self):
         string = ""
         if self.menu:

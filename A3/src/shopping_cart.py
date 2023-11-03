@@ -1,7 +1,11 @@
+# Creates and stores a shopping cart for the user.
+# Contains functions for adding/removing items to the cart, as well as canceling the order, checking out, and viewing the cart.
+
 class ShoppingCart:
     def __init__(self):
         self.cart = []
 
+    # Add item from some restaurant by name
     def add_item(self, item, restaurant_name, quantity=1):
         for cart_item in self.cart:
             if cart_item.get(restaurant_name) != None: #check if the resaurant is in the cart
@@ -28,6 +32,7 @@ class ShoppingCart:
         })      
         return "Cart updated.\n"
     
+    # Remove item from some restaurant by name
     def remove_item(self, restaurant_name, item_name):
         for cart_item in self.cart:
             if cart_item.get(restaurant_name) is not None:
@@ -40,9 +45,11 @@ class ShoppingCart:
                     return "Item removed from the cart."
         return "Item not found in the cart."
     
+    # Cancel the order
     def cancel_order(self):
         self.cart = []
 
+    # Calculate and return the price of all item's in the cart
     def cart_total_price(self):
             total_price = 0
             for cart_item in self.cart:
@@ -51,6 +58,7 @@ class ShoppingCart:
                         total_price += details['quantity'] * details['price']
             return total_price
 
+    # Place the order / check out. Checks for payment info, and prompts user to complete checkout.
     def check_out(self, payment_methods, choice=None):
         if len(self.cart) == 0:
             print("Add items to cart to check out.\n")
@@ -77,7 +85,7 @@ class ShoppingCart:
         print("Payment successful. Order has been placed.")
         return "Payment successful. Order has been placed."
         
-        
+    # Allows user to view all items that are in their cart.
     def view_cart(self):
         if not self.valid_item_quantity(len(self.cart)):
             return "Your shopping cart is empty."
@@ -89,8 +97,10 @@ class ShoppingCart:
                     print(f"{restaurant_name} - {item_name} ({details['quantity']} x ${details['price']:.2f})")
         print("")
     
+    # Returns the cart. For testing purposes.
     def get_cart(self):
         return self.cart
 
+    # Checks that the item quantity is a valid integer.
     def valid_item_quantity(self, quantity):
         return quantity > 0

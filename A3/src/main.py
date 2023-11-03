@@ -253,21 +253,20 @@ def print_options():
     print("11. Modify payment methods")
     print("0. Exit")
 
-# Access MongoDB database
-mongo_url = 'mongodb+srv://group24:eyljlgY1EkNeE8AB@group24-project.rv8qyhx.mongodb.net/?retryWrites=true&w=majority'
-client = pymongo.MongoClient(mongo_url)
-db = client['backend-database'] # database
-users_table = db['users'] # users table
-restaurants_table = db['restaurants'] # restaurants table
-restaurants = []
-users = []
-
 # Create a shopping cart for the current user
 user_cart = ShoppingCart()
 
 # Initialize the current user profile as None (no user logged in)
 cur_profile = None
+
+# Access MongoDB database
+mongo_url = 'mongodb+srv://group24:eyljlgY1EkNeE8AB@group24-project.rv8qyhx.mongodb.net/?retryWrites=true&w=majority'
+client = pymongo.MongoClient(mongo_url)
+db = client['backend-database'] # database
+
 # Load all users from DB into a list
+users_table = db['users'] # users table
+users = []
 users_list = list(users_table.find())
 for user in users_list:
     users.append((UserProfile(
@@ -280,6 +279,8 @@ for user in users_list:
     ), user['_id']))
 
 # Load all restaurants from DB into a list
+restaurants_table = db['restaurants'] # restaurants table
+restaurants = []
 restaurant_list = list(restaurants_table.find())
 for restaurant in restaurant_list:
     restaurants.append(Restaurant(
@@ -300,12 +301,12 @@ while True:
         print("0: Register")
         print("1: Login")
         print("2: Exit")
-        num = int(input("Enter choice: "))
-        if num == 0:
+        user_choice = input("Enter choice: ")
+        if user_choice == "0":
             register()
-        elif num == 1:
+        elif user_choice == "1":
             cur_profile = login()
-        elif num == 2:
+        elif user_choice == "2":
             print("Application exited.")
             break
         else:
@@ -347,14 +348,14 @@ while True:
             print("1: Modify payment method")
             print("2: Remove payment method")
             print("3: Show all payment methods")
-            num = (int)(input("Enter choice: "))
-            if num == 0:
+            user_choice = input("Enter choice: ")
+            if user_choice == "0":
                 add_payment()
-            elif num == 1:
+            elif user_choice == "1":
                 modify_payment()
-            elif num == 2:
+            elif user_choice == "2":
                 remove_payment()
-            elif num == 3:
+            elif user_choice == "3":
                 show_payments()
             else:
                 print("Invalid option return to main menu")

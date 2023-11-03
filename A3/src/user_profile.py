@@ -1,3 +1,6 @@
+# Creates and stores user information, including: name, email, phone number, address, password, and a list of all payment methods added.
+# Contains functions for modifying profile information, and adding/removing/modifying payment methods.
+
 class UserProfile:
     def __init__(self, name, email, phone_number, address, password, payment_methods=[]):
         if self.valid_credentials(email, phone_number, password):
@@ -15,6 +18,7 @@ class UserProfile:
             self.password = None
             self.payment_methods = []
 
+    # Validate email, phone number & password
     def valid_credentials(self, email, phone_number, password):
         if "@" not in email:
             print("Invalid email. Please try again.\n")
@@ -33,6 +37,7 @@ class UserProfile:
         
         return True
 
+    # Add a payment method for user
     def add_payment(self, payment_info):
         self.payment_methods.append({
             "credit_card": payment_info["credit_card"],
@@ -42,10 +47,12 @@ class UserProfile:
         })
         return "Payment method added."
     
+    # Remove a payment method by id in list for user
     def remove_payment(self, id):
         self.payment_methods.pop(id)
         return "Payment method removed."
 
+    # Modify a payment method by id in list for user
     def modify_payment(self, id, payment_info):
         self.payment_methods[id] = ({
             "credit_card": payment_info["credit_card"],
@@ -55,6 +62,7 @@ class UserProfile:
         })
         return "Payment method modified."
 
+    # Display all payment methods for user
     def show_payments(self):
         if len(self.payment_methods) == 0:
             print("No payment methods found.")
@@ -63,12 +71,14 @@ class UserProfile:
         for payment in self.payment_methods:
             print(f"Credit card: {payment['credit_card']}      Name on card: {payment['card_name']}       Billing address: {payment['billing_address']}")
 
+    # Modify profile information for user
     def modify_profile(self, email, phone_number, address, new_password):
         self.email = email
         self.phone_number = phone_number
         self.address = address
         self.password = new_password
 
+    # Show profile information of user
     def show_profile(self):
         print(f"Name: {self.name}       Email: {self.email}        Address: {self.address}     Phone Number: {self.phone_number}\n")
     
@@ -84,6 +94,7 @@ class UserProfile:
         }
         return profile_data
 
+    # Validate login of user
     def login(self, email, password):
         if self.password == password and self.email == email:
             return "You have logged in successfully."
