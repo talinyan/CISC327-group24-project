@@ -23,6 +23,27 @@ class UserProfile:
             return False
         
         return True
+
+    def add_payment(self, payment_info):
+        self.payment_methods.append({
+            "credit_card": payment_info["credit_card"],
+            "cvv": payment_info["cvv"],
+            "billing_address": payment_info["billing_address"],
+            "card_name": payment_info["first_name"] + payment_info["last_name"]
+        })
+        return "Payment method added."
+    
+    def remove_payment(self, id):
+        self.payment_methods.pop(id)
+        return "Payment method removed."
+
+    def modify_payment(self, id, payment_info):
+        self.payment_methods[id] = ({
+            "credit_card": payment_info["credit_card"],
+            "cvv": payment_info["cvv"],
+            "billing_address": payment_info["billing_address"],
+            "card_name": payment_info["first_name"] + payment_info["last_name"]
+        })
     
     def modify_profile(self, address, phone_number, email, old_password, new_password):
         if self.password == old_password:

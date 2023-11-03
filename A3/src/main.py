@@ -103,15 +103,19 @@ def show_profile():
 
 # Function to add a payment method to the current user's profile
 def add_payment():
-    cc = input("Enter your credit card information: ")
-    name = input("Enter the name on the card: ")
-    address = input("Enter the address on the card: ")
-    payment_data = {
-        "credit_card": cc,
-        "card_name": name,
-        "billing_address": address
+    credit_card = input("Enter your credit card numbers: ")
+    cvv = input("Enter your cvv:")
+    first_name = input("Enter the first name on the card: ")
+    last_name = input("Enter the last name on the card:")
+    billing_address = input("Enter the billing address on the card: ")
+    payment_info = {
+        "credit_card": credit_card,
+        "cvv": cvv,
+        "billing_address": billing_address,
+        "first_name": first_name,
+        "last_name": last_name
     }
-    cur_profile['payment_methods'].append(payment_data)
+    cur_profile.add_payment(payment_info)
 
     # update profile in database with new payment info
     update_payment_db()
@@ -128,15 +132,21 @@ def modify_payment():
             if exit_check != 'r':
                 break
         else:
-            cc = input("Enter your credit card numbers: ")
-            name = input("Enter the name on the card: ")
-            address = input("Enter the address on the card: ")
-            payment_data = {
-                "credit_card": cc,
-                "card_name": name,
-                "billing_address": address
+            credit_card = input("Enter your credit card numbers: ")
+            cvv = input("Enter your cvv:")
+            billing_address = input("Enter the billing address on the card: ")
+            first_name = input("Enter the first name on the card: ")
+            last_name = input("Enter the last name on the card:")
+
+            payment_info = {
+                "credit_card": credit_card,
+                "cvv": cvv,
+                "billing_address": billing_address,
+                "first_name": first_name,
+                "last_name": last_name
             }
-            cur_profile['payment_methods'][id] = payment_data
+
+            cur_profile.modify_payment(id, payment_info)
 
             # update profile in database with modified payment info
             update_payment_db()
@@ -154,7 +164,7 @@ def remove_payment():
             if exit_check != 'r':
                 break
         else:
-            cur_profile['payment_methods'].pop(id)
+            cur_profile.remove_payment(id)
             # update profile in database with removed payment info
             update_payment_db()
             print("Payment method removed.\n")
