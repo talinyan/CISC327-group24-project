@@ -354,6 +354,5 @@ class TestApp(unittest.TestCase):
         self.assertFalse(is_valid)
 
 
-
 if __name__ == '__main__':
     unittest.main()

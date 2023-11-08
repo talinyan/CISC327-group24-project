@@ -81,7 +81,6 @@ def modify_profile():
         old_password = input("Enter your old password: ")
         new_password = input("Choose a new password (must be at least 8 characters): ")
 
-
         if valid_credentials(phone_number, email, new_password) and old_password == cur_profile[0].password:
             cur_profile[0].modify_profile(email, phone_number, address, new_password)
 
