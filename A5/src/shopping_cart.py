@@ -122,6 +122,6 @@ class ShoppingCart:
         return quantity > 0
     
         # Check if a restaurant exists in the restaurants table.
-    def restaurant_exists(restaurant_name):
+    def restaurant_exists(self, restaurant_name):
         restaurant = restaurants_table.find_one({"name": restaurant_name})
         return restaurant is not None

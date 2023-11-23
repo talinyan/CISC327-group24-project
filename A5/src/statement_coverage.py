@@ -44,7 +44,7 @@ class TestShoppingCart(unittest.TestCase):
 
         result = self.shopping_cart.add_item(item, restaurant, quantity)
 
-        self.assertEqual(result, "Cart updated.")
+        self.assertEqual(result, "Cart updated.\n")
 
     def test_add_item_new_restaurant(self):
         item = {"item_name": "Lobster Tortellini", "price": 18.0}
@@ -53,7 +53,7 @@ class TestShoppingCart(unittest.TestCase):
 
         result = self.shopping_cart.add_item(item, restaurant, quantity)
 
-        self.assertEqual(result, "Cart updated.")
+        self.assertEqual(result, "Cart updated.\n")
 
 if __name__ == '__main__':
     unittest.main()
