@@ -26,33 +26,33 @@ class TestApp(unittest.TestCase):
             # Create a test shopping cart
             cart = ShoppingCart()
 
-            # Define a valid item quantity
+            # Define quantity < 0, which is invalid
             valid_quantity = -1
 
             # Check if the item quantity is valid using the function
             is_valid = cart.valid_item_quantity(valid_quantity)
 
-            # Assert that the item quantity is valid
-            self.assertTrue(is_valid)
+            # Assert that the item quantity is invalid
+            self.assertFalse(is_valid)
 
     def test_valid_item_quantity2(self):
             # Create a test shopping cart
             cart = ShoppingCart()
 
-            # Define a valid item quantity
+            # Define quantity == 0, which is invalid
             valid_quantity = 0
 
             # Check if the item quantity is valid using the function
-            is_valid = cart.valid_item_quantity3(valid_quantity)
+            is_valid = cart.valid_item_quantity(valid_quantity)
 
-            # Assert that the item quantity is valid
-            self.assertTrue(is_valid)
+            # Assert that the item quantity is invalid
+            self.assertFalse(is_valid)
 
-    def test_valid_item_quantity1(self):
+    def test_valid_item_quantity3(self):
             # Create a test shopping cart
             cart = ShoppingCart()
 
-            # Define a valid item quantity
+            # Define quantity > 0, which is valid
             valid_quantity = 2
 
             # Check if the item quantity is valid using the function
@@ -65,90 +65,81 @@ class TestApp(unittest.TestCase):
         # Initialize a test user profile
         test_user = UserProfile("Test User", "test@test.com", "1234567890", "Test Address", "password123")
         
-        # Modify the profile information 
-        new_phone_number = "0" #invalid
-        new_email = "bob@gmail.com" #valid
+        # Define new profile information 
+        new_phone_number = "0" # invalid
+        new_email = "bob@gmail.com" # valid
         new_address = "New Address"
         old_password = "password123" 
-        new_password = "bobisepic123" #valid
+        new_password = "bobisepic123" # valid
         
         # Ensure old password is same as stored one
         self.assertEqual(test_user.password, old_password)
 
-        # Ensure new profile information meets criteria
-        result = test_user.valid_credentials(new_email, new_phone_number, new_password)
-        self.assertTrue(result)
+        # Try to modify profile, ensure credential check fails & returns False
+        result = test_user.modify_profile(new_email, new_phone_number, new_address, new_password)
+        self.assertFalse(result)
 
-        # Modify profile
-        test_user.modify_profile(new_email, new_phone_number, new_address, new_password)
-        
-        # Check if the profile information is modified
-        self.assertEqual(test_user.phone_number, new_phone_number)
-        self.assertEqual(test_user.email, new_email)
-        self.assertEqual(test_user.address, new_address)
-        self.assertEqual(test_user.password, new_password)
+        # Check if the profile information is unmodified
+        self.assertNotEqual(test_user.phone_number, new_phone_number)
+        self.assertNotEqual(test_user.email, new_email)
+        self.assertNotEqual(test_user.address, new_address)
+        self.assertNotEqual(test_user.password, new_password)
 
     def test_modify_profile2(self):
-            # Initialize a test user profile
-            test_user = UserProfile("Test User", "test@test.com", "1234567890", "Test Address", "password123")
-            
-            # Modify the profile information 
-            new_phone_number = "1111111111" #valid
-            new_email = "bob" #invalid
-            new_address = "New Address"
-            old_password = "password123" 
-            new_password = "bobisepic123" #valid
-            
-            # Ensure old password is same as stored one
-            self.assertEqual(test_user.password, old_password)
+        # Initialize a test user profile
+        test_user = UserProfile("Test User", "test@test.com", "1234567890", "Test Address", "password123")
+        
+        # Modify the profile information 
+        new_phone_number = "1111111111" # valid
+        new_email = "bob" # invalid
+        new_address = "New Address"
+        old_password = "password123" 
+        new_password = "bobisepic123" # valid
+        
+        # Ensure old password is same as stored one
+        self.assertEqual(test_user.password, old_password)
 
-            # Ensure new profile information meets criteria
-            result = test_user.valid_credentials(new_email, new_phone_number, new_password)
-            self.assertTrue(result)
+        # Try to modify profile, ensure credential check fails & returns False
+        result = test_user.modify_profile(new_email, new_phone_number, new_address, new_password)
+        self.assertFalse(result)
 
-            # Modify profile
-            test_user.modify_profile(new_email, new_phone_number, new_address, new_password)
-            
-            # Check if the profile information is modified
-            self.assertEqual(test_user.phone_number, new_phone_number)
-            self.assertEqual(test_user.email, new_email)
-            self.assertEqual(test_user.address, new_address)
-            self.assertEqual(test_user.password, new_password)
+        # Check if the profile information is unmodified
+        self.assertNotEqual(test_user.phone_number, new_phone_number)
+        self.assertNotEqual(test_user.email, new_email)
+        self.assertNotEqual(test_user.address, new_address)
+        self.assertNotEqual(test_user.password, new_password)
 
     def test_modify_profile3(self):
-            # Initialize a test user profile
-            test_user = UserProfile("Test User", "test@test.com", "1234567890", "Test Address", "password123")
-            
-            # Modify the profile information 
-            new_phone_number = "1111111111" #valid
-            new_email = "bob@gmail.com" #valid
-            new_address = "New Address"
-            old_password = "password123" 
-            new_password = "bob" #invalid
-            
-            # Ensure old password is same as stored one
-            self.assertEqual(test_user.password, old_password)
+        # Initialize a test user profile
+        test_user = UserProfile("Test User", "test@test.com", "1234567890", "Test Address", "password123")
+        
+        # Modify the profile information 
+        new_phone_number = "1111111111" # valid
+        new_email = "bob@gmail.com" # valid
+        new_address = "New Address"
+        old_password = "password123" 
+        new_password = "bob" # invalid
+        
+        # Ensure old password is same as stored one
+        self.assertEqual(test_user.password, old_password)
 
-            # Ensure new profile information meets criteria
-            result = test_user.valid_credentials(new_email, new_phone_number, new_password)
-            self.assertTrue(result)
+        # Try to modify profile, ensure credential check fails & returns False
+        result = test_user.modify_profile(new_email, new_phone_number, new_address, new_password)
+        self.assertFalse(result)
 
-            # Modify profile
-            test_user.modify_profile(new_email, new_phone_number, new_address, new_password)
-            
-            # Check if the profile information is modified
-            self.assertEqual(test_user.phone_number, new_phone_number)
-            self.assertEqual(test_user.email, new_email)
-            self.assertEqual(test_user.address, new_address)
-            self.assertEqual(test_user.password, new_password)  
+        # Check if the profile information is unmodified
+        self.assertNotEqual(test_user.phone_number, new_phone_number)
+        self.assertNotEqual(test_user.email, new_email)
+        self.assertNotEqual(test_user.address, new_address)
+        self.assertNotEqual(test_user.password, new_password)
 
     def test_modify_profile4(self):
         # Initialize a test user profile
         test_user = UserProfile("Test User", "test@test.com", "1234567890", "Test Address", "password123")
         
         # Modify the profile information 
-        new_phone_number = "0" #invalid
-        new_email = "bob" #invalid
+        new_phone_number = "0" # invalid
+        new_email = "bob" # invalid
         new_address = "New Address"
         old_password = "password123" 
         new_password = "bobisepic123" #valid
@@ -156,124 +147,112 @@ class TestApp(unittest.TestCase):
         # Ensure old password is same as stored one
         self.assertEqual(test_user.password, old_password)
 
-        # Ensure new profile information meets criteria
-        result = test_user.valid_credentials(new_email, new_phone_number, new_password)
-        self.assertTrue(result)
+        # Try to modify profile, ensure credential check fails & returns False
+        result = test_user.modify_profile(new_email, new_phone_number, new_address, new_password)
+        self.assertFalse(result)
 
-        # Modify profile
-        test_user.modify_profile(new_email, new_phone_number, new_address, new_password)
-        
-        # Check if the profile information is modified
-        self.assertEqual(test_user.phone_number, new_phone_number)
-        self.assertEqual(test_user.email, new_email)
-        self.assertEqual(test_user.address, new_address)
-        self.assertEqual(test_user.password, new_password)  
+        # Check if the profile information is unmodified
+        self.assertNotEqual(test_user.phone_number, new_phone_number)
+        self.assertNotEqual(test_user.email, new_email)
+        self.assertNotEqual(test_user.address, new_address)
+        self.assertNotEqual(test_user.password, new_password)
 
     def test_modify_profile5(self):
         # Initialize a test user profile
         test_user = UserProfile("Test User", "test@test.com", "1234567890", "Test Address", "password123")
         
         # Modify the profile information 
-        new_phone_number = "0" #invalid
+        new_phone_number = "0" # invalid
         new_email = "bob@gmail.com" #valid
         new_address = "New Address"
         old_password = "password123" 
-        new_password = "bob" #invalid
+        new_password = "bob" # invalid
         
         # Ensure old password is same as stored one
         self.assertEqual(test_user.password, old_password)
 
-        # Ensure new profile information meets criteria
-        result = test_user.valid_credentials(new_email, new_phone_number, new_password)
-        self.assertTrue(result)
+        # Try to modify profile, ensure credential check fails & returns False
+        result = test_user.modify_profile(new_email, new_phone_number, new_address, new_password)
+        self.assertFalse(result)
 
-        # Modify profile
-        test_user.modify_profile(new_email, new_phone_number, new_address, new_password)
-        
-        # Check if the profile information is modified
-        self.assertEqual(test_user.phone_number, new_phone_number)
-        self.assertEqual(test_user.email, new_email)
-        self.assertEqual(test_user.address, new_address)
-        self.assertEqual(test_user.password, new_password)  
+        # Check if the profile information is unmodified
+        self.assertNotEqual(test_user.phone_number, new_phone_number)
+        self.assertNotEqual(test_user.email, new_email)
+        self.assertNotEqual(test_user.address, new_address)
+        self.assertNotEqual(test_user.password, new_password)
 
     def test_modify_profile6(self):
         # Initialize a test user profile
         test_user = UserProfile("Test User", "test@test.com", "1234567890", "Test Address", "password123")
         
         # Modify the profile information 
-        new_phone_number = "1111111111" #valid
-        new_email = "bob" #invalid
+        new_phone_number = "1111111111" # valid
+        new_email = "bob" # invalid
         new_address = "New Address"
         old_password = "password123" 
-        new_password = "bob" #invalid
+        new_password = "bob" # invalid
         
         # Ensure old password is same as stored one
         self.assertEqual(test_user.password, old_password)
 
-        # Ensure new profile information meets criteria
-        result = test_user.valid_credentials(new_email, new_phone_number, new_password)
-        self.assertTrue(result)
+        # Try to modify profile, ensure credential check fails & returns False
+        result = test_user.modify_profile(new_email, new_phone_number, new_address, new_password)
+        self.assertFalse(result)
 
-        # Modify profile
-        test_user.modify_profile(new_email, new_phone_number, new_address, new_password)
-        
-        # Check if the profile information is modified
-        self.assertEqual(test_user.phone_number, new_phone_number)
-        self.assertEqual(test_user.email, new_email)
-        self.assertEqual(test_user.address, new_address)
-        self.assertEqual(test_user.password, new_password)  
+        # Check if the profile information is unmodified
+        self.assertNotEqual(test_user.phone_number, new_phone_number)
+        self.assertNotEqual(test_user.email, new_email)
+        self.assertNotEqual(test_user.address, new_address)
+        self.assertNotEqual(test_user.password, new_password)
 
     def test_modify_profile7(self):
         # Initialize a test user profile
         test_user = UserProfile("Test User", "test@test.com", "1234567890", "Test Address", "password123")
         
         # Modify the profile information 
-        new_phone_number = "1111111111" #valid
-        new_email = "bob@gmail.com" #valid
+        new_phone_number = "1111111111" # valid
+        new_email = "bob@gmail.com" # valid
         new_address = "New Address"
         old_password = "password123" 
-        new_password = "bobisepic123" #valid
+        new_password = "bobisepic123" # valid
         
         # Ensure old password is same as stored one
         self.assertEqual(test_user.password, old_password)
 
-        # Ensure new profile information meets criteria
-        result = test_user.valid_credentials(new_email, new_phone_number, new_password)
+        # Try to modify profile, ensure credential check passes & returns True
+        result = test_user.modify_profile(new_email, new_phone_number, new_address, new_password)
         self.assertTrue(result)
 
-        # Modify profile
-        test_user.modify_profile(new_email, new_phone_number, new_address, new_password)
-        
         # Check if the profile information is modified
         self.assertEqual(test_user.phone_number, new_phone_number)
         self.assertEqual(test_user.email, new_email)
         self.assertEqual(test_user.address, new_address)
-        self.assertEqual(test_user.password, new_password)  
+        self.assertEqual(test_user.password, new_password)
 
     def test_modify_profile8(self):
         # Initialize a test user profile
         test_user = UserProfile("Test User", "test@test.com", "1234567890", "Test Address", "password123")
         
         # Modify the profile information 
-        new_phone_number = "0" #invalid
-        new_email = "bob" #invalid
+        new_phone_number = "0" # invalid
+        new_email = "bob" # invalid
         new_address = "New Address"
         old_password = "password123" 
-        new_password = "bob" #invalid
+        new_password = "bob" # invalid
         
         # Ensure old password is same as stored one
         self.assertEqual(test_user.password, old_password)
 
-        # Ensure new profile information meets criteria
-        result = test_user.valid_credentials(new_email, new_phone_number, new_password)
-        self.assertTrue(result)
+        # Try to modify profile, ensure credential check fails & returns False
+        result = test_user.modify_profile(new_email, new_phone_number, new_address, new_password)
+        self.assertFalse(result)
 
-        # Modify profile
-        test_user.modify_profile(new_email, new_phone_number, new_address, new_password)
-        
-        # Check if the profile information is modified
-        self.assertEqual(test_user.phone_number, new_phone_number)
-        self.assertEqual(test_user.email, new_email)
-        self.assertEqual(test_user.address, new_address)
-        self.assertEqual(test_user.password, new_password)  
+        # Check if the profile information is unmodified
+        self.assertNotEqual(test_user.phone_number, new_phone_number)
+        self.assertNotEqual(test_user.email, new_email)
+        self.assertNotEqual(test_user.address, new_address)
+        self.assertNotEqual(test_user.password, new_password)
 
+
+if __name__ == '__main__':
+    unittest.main()

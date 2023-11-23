@@ -8,45 +8,44 @@ restaurants_table = db['restaurants'] # restaurants table
 
 # Creates and stores a shopping cart for the user.
 # Contains functions for adding/removing items to the cart, as well as canceling the order, checking out, and viewing the cart.
-
 class ShoppingCart:
     def __init__(self):
         self.cart = []
 
     # Add item from some restaurant by name
     def add_item(self, item, restaurant_name, quantity=1):
-            # Check if the restaurant exists
-            if not self.restaurant_exists(restaurant_name):
-                return "Restaurant not found."
+        # Check if the restaurant exists
+        if not self.restaurant_exists(restaurant_name):
+            return "Restaurant not found."
 
-            # Check if the item quantity is valid
-            if not self.valid_item_quantity(quantity):
-                return "Invalid item quantity."
+        # Check if the item quantity is valid
+        if not self.valid_item_quantity(quantity):
+            return "Invalid item quantity."
 
-            for cart_item in self.cart:
-                if cart_item.get(restaurant_name) is not None:
-                    if item['item_name'] in cart_item[restaurant_name]:
-                        # If the item is already in the cart, update its quantity.
-                        cart_item[restaurant_name][item['item_name']]['quantity'] += quantity
-                        return "Item added to the cart."
-                    else:
-                        # If the restaurant is in the cart but the item is not, add the item.
-                        cart_item[restaurant_name][item['item_name']] = {
-                            'quantity': quantity,
-                            'price': item['price']
-                        }
-                        return "Cart updated."
-
-            # If the restaurant is not in the cart, add it along with the item.
-            self.cart.append({
-                restaurant_name: {
-                    item['item_name']: {
+        for cart_item in self.cart:
+            if cart_item.get(restaurant_name) != None: #check if the resaurant is in the cart
+                if item['item_name'] in cart_item[restaurant_name]:
+                    # If the item is already in the cart, update its quantity.
+                    cart_item[restaurant_name][item['item_name']]['quantity'] += quantity
+                    return "Item added to the cart."
+                else:
+                    # If the restaurant is in the cart but the item is not, add the item.
+                    cart_item[restaurant_name][item['item_name']] = {
                         'quantity': quantity,
                         'price': item['price']
                     }
+                    return "Cart updated."
+                
+        # If the restaurant is not in the cart, add it along with the item.
+        self.cart.append({
+            restaurant_name: {
+                item['item_name']: {
+                    'quantity': quantity,
+                    'price': item['price']
                 }
-            })
-            return "Cart updated.\n"
+            }
+        })      
+        return "Cart updated.\n"
     
     # Remove item from some restaurant by name
     def remove_item(self, restaurant_name, item_name):
@@ -121,7 +120,7 @@ class ShoppingCart:
     def valid_item_quantity(self, quantity):
         return quantity > 0
     
-        # Check if a restaurant exists in the restaurants table.
+    # Check if a restaurant exists in the restaurants table.
     def restaurant_exists(self, restaurant_name):
         restaurant = restaurants_table.find_one({"name": restaurant_name})
         return restaurant is not None

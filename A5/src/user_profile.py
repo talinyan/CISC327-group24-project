@@ -22,7 +22,6 @@ class UserProfile:
     def valid_credentials(self, email, phone_number, password):
         if "@" not in email:
             print("Invalid email. Please try again.\n")
-            print('bruh1')
             return False
 
         # phone number must be of length 10 and all digits
@@ -73,10 +72,13 @@ class UserProfile:
 
     # Modify profile information for user
     def modify_profile(self, email, phone_number, address, new_password):
-        self.email = email
-        self.phone_number = phone_number
-        self.address = address
-        self.password = new_password
+        if self.valid_credentials(email, phone_number, new_password):
+            self.email = email
+            self.phone_number = phone_number
+            self.address = address
+            self.password = new_password
+            return True
+        return False
 
     # Show profile information of user
     def show_profile(self):

@@ -225,7 +225,7 @@ class TestApp(unittest.TestCase):
         cart = ShoppingCart()
 
         # Create a test item and restaruant name
-        restaurant_name = "Amazing Restaurant"
+        restaurant_name = "Underground Vegan"
         item = {
             "item_name": "Item1",
             "category": "Some",
@@ -241,7 +241,7 @@ class TestApp(unittest.TestCase):
 
         # Expected cart
         expected_cart = [
-            {"Amazing Restaurant": {
+            {"Underground Vegan": {
                 "Item1": {
                     "quantity": 1,
                     "price": 2
@@ -257,7 +257,7 @@ class TestApp(unittest.TestCase):
         cart = ShoppingCart()
 
         # Create a test item and restaruant name
-        restaurant_name = "Amazing Restaurant"
+        restaurant_name = "Underground Vegan"
         item = {
             "item_name": "Item1",
             "category": "Some",
@@ -282,7 +282,7 @@ class TestApp(unittest.TestCase):
         cart = ShoppingCart()
 
         # Create a test item and restaruant name
-        restaurant_name = "Amazing Restaurant"
+        restaurant_name = "Underground Vegan"
         item = {
             "item_name": "Item1",
             "category": "Some",
@@ -307,7 +307,7 @@ class TestApp(unittest.TestCase):
         cart = ShoppingCart()
 
         # Create a test item and restaruant name
-        restaurant_name = "Amazing Restaurant"
+        restaurant_name = "Underground Vegan"
         item = {
             "item_name": "Item1",
             "category": "Some",
@@ -352,8 +352,6 @@ class TestApp(unittest.TestCase):
 
         # Assert that the item quantity is invalid
         self.assertFalse(is_valid)
-
-
 
 if __name__ == '__main__':
     unittest.main()
