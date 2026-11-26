@@ -1,7 +1,7 @@
 import csv
 
 # Define the CSV files containing menus for initialization
-menu_file = "C:/Users/trayb/Documents/School Files/University/Courses/Fall23/CISC327/CISC327-group24-project/A3/src/db_setup/restaurant-menus.csv" # change to absolute path to this directory to work
+menu_file = "./db_setup/restaurant-menus.csv" # change to absolute path to this directory to work
 
 # For creating and storing information about a restaruant, including: id, name, address, category, price range, opening time, closing time, and menu
 # Contains methods for initializing & viewing menu

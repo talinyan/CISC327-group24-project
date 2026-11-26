@@ -4,7 +4,7 @@ from restaurant_init_helper import Restaurant
 
 # When running this file, accesses all restaurants and their menus, and allows
 # adding them to DB table, viewing the DB table, or dropping the table.
-restaurant_file = "C:/Users/trayb/Documents/School Files/University/Courses/Fall23/CISC327/CISC327-group24-project/A3/src/db_setup/restaurant.csv"
+restaurant_file = "./restaurant.csv"
 
 restaurants_all = []
 with open(restaurant_file, 'r', newline='') as csvfile:
@@ -21,7 +21,7 @@ with open(restaurant_file, 'r', newline='') as csvfile:
 
 def main():
     # Access MongoDB database
-    mongo_url = 'mongodb+srv://group24:eyljlgY1EkNeE8AB@group24-project.rv8qyhx.mongodb.net/?retryWrites=true&w=majority'
+    mongo_url = 'some url'
     client = pymongo.MongoClient(mongo_url)
     db = client['backend-database'] # database
     restaurants_table = db['restaurants'] # restaurants table

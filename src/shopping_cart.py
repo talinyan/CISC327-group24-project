@@ -1,7 +1,7 @@
 import pymongo
 
 # Access MongoDB database
-mongo_url = 'mongodb+srv://group24:eyljlgY1EkNeE8AB@group24-project.rv8qyhx.mongodb.net/?retryWrites=true&w=majority'
+mongo_url = 'some url'
 client = pymongo.MongoClient(mongo_url)
 db = client['backend-database'] # database
 restaurants_table = db['restaurants'] # restaurants table
